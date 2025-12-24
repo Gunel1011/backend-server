@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const authRoutes = require("./controllers/authRoutes");
-const productRoutes = require("./controllers/productRoutes");
-const cartRoutes = require("./controllers/cartRoutes");
+const authRoutes = require("./controllers/authController"); 
+const productRoutes = require("./routes/productRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
