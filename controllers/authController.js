@@ -141,7 +141,7 @@ const sendAdminDeleteOTP = async (req, res) => {
     await admin.save();
 
     // Burada yuxarıdakı köməkçi funksiyanı çağırırıq
-    sendOTPToEmail(admin.email, otp); 
+    sendOTPToEmail(admin.email, otp);
 
     res.send("OTP göndərildi");
   } catch (error) {
@@ -265,11 +265,9 @@ const changeUserRole = async (req, res) => {
     await user.save();
 
     res.send({
-      message: `${user.name} ${
-        user.surname
-      } adlı istifadəçinin rolu dəyişdirildi. İstifadəçi artıq ${
-        user.role === "admin" ? "Admindir" : "Admin deyil"
-      }`,
+      message: `${user.name} ${user.surname
+        } adlı istifadəçinin rolu dəyişdirildi. İstifadəçi artıq ${user.role === "admin" ? "Admindir" : "Admin deyil"
+        }`,
     });
   } catch (error) {
     res.status(500).send("Xəta: " + error.message);
@@ -454,7 +452,7 @@ const adminDeactivateUser = async (req, res) => {
     if (!targetUser) return res.status(404).send("İstifadəçi tapılmadı");
 
     // Birbaşa statusu dəyişirik (OTP-siz)
-    targetUser.isActive = isActive; 
+    targetUser.isActive = isActive;
     targetUser.otp = null;
     await targetUser.save();
 
@@ -613,4 +611,5 @@ module.exports = {
   sendAdminDeleteOTP,
   adminChangeStatus,
   adminDeleteUser,
+  adminDeactivateUser,
 };
