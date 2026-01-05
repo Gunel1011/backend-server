@@ -37,7 +37,7 @@ app.options("*", cors());
 app.use(bodyParser.json());
 
 // 2. BU HİSSƏNİ DƏYİŞDİRDİK (Yolu mütləq olaraq təyin etdik)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);
