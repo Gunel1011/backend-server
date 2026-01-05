@@ -9,7 +9,12 @@
   "routes": [
     {
       "src": "/uploads/(.*)",
-      "dest": "/uploads/$1"
+      "dest": "/uploads/$1",
+      "continue": true
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "app.js"
     },
     {
       "src": "/(.*)",
