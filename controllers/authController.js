@@ -7,7 +7,6 @@ const multer = require("multer");
 const path = require("path");
 require("dotenv").config();
 
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -54,23 +53,27 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+ 
+    if (!process.env.JWT_SECRET) {
+      console.error("XƏTA: JWT_SECRET tapılmadı!");
+      return res.status(500).send("Server tənzimləmə xətası (Secret missing)");
+    }
+
     const user = await User.findOne({ email });
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(401).send("Yalnış email və ya şifrə");
     }
+
     if (!user.isActive) {
-      return res
-        .status(401)
-        .send(
-          "İstifadəçi profili aktiv deyil. Zəhmət olmasa yenidən aktivləşdirin."
-        );
+      return res.status(401).send("İstifadəçi profili aktiv deyil.");
     }
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET, 
       { expiresIn: "1w" }
     );
+
     res.send({ token });
   } catch (error) {
     res.status(500).send("Xəta loginUser: " + error.message);
@@ -132,7 +135,7 @@ const sendAdminDeleteOTP = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const admin = await User.findById(decoded.userId);
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== "admin") {
       return res.status(403).send("İcazəniz yoxdur");
     }
 
@@ -265,9 +268,11 @@ const changeUserRole = async (req, res) => {
     await user.save();
 
     res.send({
-      message: `${user.name} ${user.surname
-        } adlı istifadəçinin rolu dəyişdirildi. İstifadəçi artıq ${user.role === "admin" ? "Admindir" : "Admin deyil"
-        }`,
+      message: `${user.name} ${
+        user.surname
+      } adlı istifadəçinin rolu dəyişdirildi. İstifadəçi artıq ${
+        user.role === "admin" ? "Admindir" : "Admin deyil"
+      }`,
     });
   } catch (error) {
     res.status(500).send("Xəta: " + error.message);
@@ -418,7 +423,7 @@ const adminChangeStatus = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const admin = await User.findById(decoded.userId);
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== "admin") {
       return res.status(403).send("İcazəniz yoxdur");
     }
 
@@ -444,7 +449,7 @@ const adminDeactivateUser = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const admin = await User.findById(decoded.userId);
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== "admin") {
       return res.status(403).send("İcazəniz yoxdur");
     }
 
@@ -456,7 +461,7 @@ const adminDeactivateUser = async (req, res) => {
     targetUser.otp = null;
     await targetUser.save();
 
-    res.send(`İstifadəçi statusu ${isActive ? 'Aktiv' : 'Deaktiv'} edildi.`);
+    res.send(`İstifadəçi statusu ${isActive ? "Aktiv" : "Deaktiv"} edildi.`);
   } catch (error) {
     res.status(500).send("Xəta: " + error.message);
   }
@@ -498,7 +503,9 @@ const confirmUserReactivation = async (req, res) => {
     user.otp = null;
     await user.save();
 
-    res.send("İstifadəçi aktivləşdirildi. Zəhmət olmasa hesabınıza daxil olun.");
+    res.send(
+      "İstifadəçi aktivləşdirildi. Zəhmət olmasa hesabınıza daxil olun."
+    );
   } catch (error) {
     res.status(500).send("Xəta: confirmUserReactivation" + error.message);
   }
@@ -526,7 +533,6 @@ const sendDeleteAccountOTP = async (req, res) => {
   }
 };
 
-
 // 2. Yenilənmiş funksiya: OTP ilə silmək üçün
 const adminDeleteUser = async (req, res) => {
   const token = req.headers.authorization;
@@ -536,7 +542,7 @@ const adminDeleteUser = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const admin = await User.findById(decoded.userId);
 
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== "admin") {
       return res.status(403).send("İcazəniz yoxdur");
     }
 
