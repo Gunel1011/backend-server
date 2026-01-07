@@ -28,7 +28,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*", // Bütün domainlərə icazə verir (production-da dəqiq domain yazın)
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "https://jazeancoffee-clone-admin-panel.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
@@ -42,7 +46,7 @@ app.options("*", cors());
 app.use(bodyParser.json());
 
 // 2. BU HİSSƏNİ DƏYİŞDİRDİK (Yolu mütləq olaraq təyin etdik)
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+// app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api", authRoutes);
 app.use("/api", productRoutes);

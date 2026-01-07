@@ -11,14 +11,7 @@ const isAdmin = (token) => {
   }
 };
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(null, new Date().toISOString().replace(/:/g, "-") + file.originalname);
-  },
-});
+const { storage } = require("../utils/cloudinary");
 
 const upload = multer({ storage: storage }).single("productImage");
 
@@ -26,11 +19,11 @@ const getProducts = async (req, res) => {
   try {
     const { for_slide } = req.query;
     let query = {};
-    
+
     if (for_slide !== undefined) {
       query.for_slide = for_slide === 'true';
     }
-    
+
     const products = await Product.find(query);
     res.send(products);
   } catch (error) {

@@ -7,17 +7,7 @@ const multer = require("multer");
 const path = require("path");
 require("dotenv").config();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+const { storage } = require("../utils/cloudinary");
 
 const upload = multer({ storage: storage }).single("profileImage");
 
@@ -53,7 +43,7 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
- 
+
     if (!process.env.JWT_SECRET) {
       console.error("XƏTA: JWT_SECRET tapılmadı!");
       return res.status(500).send("Server tənzimləmə xətası (Secret missing)");
@@ -70,7 +60,7 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
-      process.env.JWT_SECRET, 
+      process.env.JWT_SECRET,
       { expiresIn: "1w" }
     );
 
@@ -268,11 +258,9 @@ const changeUserRole = async (req, res) => {
     await user.save();
 
     res.send({
-      message: `${user.name} ${
-        user.surname
-      } adlı istifadəçinin rolu dəyişdirildi. İstifadəçi artıq ${
-        user.role === "admin" ? "Admindir" : "Admin deyil"
-      }`,
+      message: `${user.name} ${user.surname
+        } adlı istifadəçinin rolu dəyişdirildi. İstifadəçi artıq ${user.role === "admin" ? "Admindir" : "Admin deyil"
+        }`,
     });
   } catch (error) {
     res.status(500).send("Xəta: " + error.message);
