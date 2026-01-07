@@ -28,11 +28,16 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "*", // Bütün domainlərə icazə verir (production-da dəqiq domain yazın)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 200
   })
 );
+
+// Preflight sorğularını idarə et
 app.options("*", cors());
 app.use(bodyParser.json());
 
