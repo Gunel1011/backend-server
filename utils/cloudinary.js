@@ -10,7 +10,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
-        folder: "jazean-coffee", // Cloudinary-də qovluq adı
+        folder: "jazean-coffee",
         allowed_formats: ["jpg", "png", "jpeg", "webp"],
     },
 });

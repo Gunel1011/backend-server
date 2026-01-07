@@ -8,21 +8,43 @@ const mongoose = require("mongoose");
 const path = require("path"); // 1. BU SƏTİRİ ƏLAVƏ ETDİK
 require("dotenv").config();
 
+// MongoDB Connection Handling for Serverless
+let isConnected = false;
+
 const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+
   try {
     const mongoURI = process.env.MONGODB_URI;
     if (!mongoURI) {
-      console.error("❌ MONGODB_URI təyin edilməyib!");
-      process.exit(1);
+      throw new Error("MONGODB_URI environment variable is not defined");
     }
-    await mongoose.connect(mongoURI);
+
+    const db = await mongoose.connect(mongoURI);
+
+    isConnected = db.connections[0].readyState;
     console.log("✅ MongoDB - yə bağlandı");
   } catch (err) {
     console.error("❌ MongoDB bağlantı xətası:", err.message);
-    process.exit(1);
+    // process.exit(1); // Serverless mühitdə prosesi öldürmürük, xətanı tuturuq
+    throw err;
   }
 };
-connectDB();
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({
+      error: "Verilənlər bazasına qoşulma xətası",
+      details: error.message
+    });
+  }
+});
 
 const app = express();
 
