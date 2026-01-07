@@ -48,24 +48,28 @@ app.use(async (req, res, next) => {
 
 const app = express();
 
+// 1. Request Logging (Vercel Loglarında görmək üçün)
+app.use((req, res, next) => {
+  console.log(`📨 [${req.method}] ${req.url} | Origin: ${req.headers.origin}`);
+  next();
+});
+
+// 2. Sadələşdirilmiş CORS (Debug üçün)
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://jazeancoffee-clone-admin-panel.vercel.app"
-    ],
+    origin: "*", // Hələlik hər kəsə icazə veririk
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 200
   })
 );
 
-// Preflight sorğularını idarə et
-app.options("*", cors());
 app.use(bodyParser.json());
+
+// 3. Test route (Serverin işlədiyini yoxlamaq üçün)
+app.get("/", (req, res) => {
+  res.send("Backend Server İşləyir! 🚀");
+});
 
 // 2. BU HİSSƏNİ DƏYİŞDİRDİK (Yolu mütləq olaraq təyin etdik)
 // app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
