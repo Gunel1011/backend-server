@@ -8,6 +8,8 @@ const mongoose = require("mongoose");
 const path = require("path"); // 1. BU SƏTİRİ ƏLAVƏ ETDİK
 require("dotenv").config();
 
+const app = express();
+
 // MongoDB Connection Handling for Serverless
 let isConnected = false;
 
@@ -46,8 +48,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-const app = express();
-
 // 1. Request Logging (Vercel Loglarında görmək üçün)
 app.use((req, res, next) => {
   console.log(`📨 [${req.method}] ${req.url} | Origin: ${req.headers.origin}`);
@@ -55,9 +55,16 @@ app.use((req, res, next) => {
 });
 
 // 2. Sadələşdirilmiş CORS (Debug üçün)
+const allowedOrigins = [
+  "https://jazeancoffee-clone-admin-panel.vercel.app",
+  "https://jazeancoffee-clone-admin-panel.vercel.app/",
+  "http://localhost:5173",
+  "http://localhost:3000"
+];
+
 app.use(
   cors({
-    origin: "*", // Hələlik hər kəsə icazə veririk
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
